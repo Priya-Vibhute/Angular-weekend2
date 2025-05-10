@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { error, log } from 'console';
-import { from, interval, Observable, of, take } from 'rxjs';
+import { catchError, delay, filter, from, interval, map, merge, mergeAll, mergeMap, Observable, of, pipe, retry, switchAll, switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-observable',
@@ -69,4 +69,121 @@ export class ObservableComponent {
       next:(value)=>console.log(value)
     })
   }
+
+  getData5()
+  {
+    of(12,56,100,45,90)
+    .pipe(
+      map(value=>value*10)
+    )
+    .subscribe({
+      next:(value)=>console.log(value)
+    })
+  }
+
+  getData6()
+  {
+    of(12,56,100,45,90)
+    .pipe(
+      filter(value=>value>50),
+      map(value=>"Value given by map "+value),
+      take(2)
+    )
+    .subscribe({
+      next:(value)=>console.log(value)
+    })
+  }
+
+  getData7()
+  {
+    merge(of(12,67,100),of("A","B","C"))
+    .subscribe({
+      next:(value)=>console.log(value)
+    })
+  }
+
+  getData8()
+  {
+    from("HELLO")
+    .pipe(
+      mergeMap((value)=>of(value,[12,56])),
+      // mergeAll()
+     
+    )
+    .subscribe({
+      next:(value)=>console.log(value)
+    })
+  }
+
+  getData9()
+  {
+    of(12,67,89,45)
+    .pipe(
+      delay(4000),
+    )
+    .subscribe({
+      next:(value=>console.log(value))
+    })
+
+  }
+
+  getData10()
+  {
+    of(12,56,899,45,678)
+    .pipe(
+      switchMap(value=>of(value).pipe(delay(3000))),
+      // switchAll()
+    
+    ).subscribe({
+      next:value=>console.log(value)
+    })
+  }
+
+
+  interval4=interval(1000)
+  interval4_subscription:any;
+
+  getData11()
+  {
+    this.interval4_subscription=this.interval4.subscribe({
+      next:(value)=>console.log(value)
+    })
+  }
+
+  stop_subscription()
+  {
+    this.interval4_subscription.unsubscribe()
+  }
+
+  getData12()
+  {
+    let count=0;
+    of(100,200,300,400,500,600)
+    .pipe(
+      map(value=>{
+        count++;
+        if(value==300)
+        {
+          throw new Error("Something went wrong")
+        }
+
+        return value
+
+        
+      }),
+      retry(4),
+      catchError((error)=>{
+        console.log(error.message);
+        return of("A","B","C")
+      })
+    ).subscribe({
+      next:(value)=>console.log(value)
+    })
+
+    console.log("Count:",count)
+  }
+
+  
+
+
 }
