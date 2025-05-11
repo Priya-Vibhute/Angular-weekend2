@@ -1,1 +1,9 @@
 <p>api-handler works!</p>
+
+<div class="card text-dark bg-light mb-3" style="max-width: 18rem;" *ngFor="let x of posts">
+  <div class="card-header">{{x.title}}</div>
+  <div class="card-body">
+    <h5 class="card-title">{{x.body}}</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
